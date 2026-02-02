@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Valentine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            transition: transform 0.4s ease;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .buttons {
+            position: relative;
+            width: 90%;
+            max-width: 360px;
+            height: 220px;
+            z-index: 2;
+        }
+
+        button {
+            padding: 14px 28px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease;
+            user-select: none;
+        }
+
+        #yes {
+            position: absolute;
+            left: 15%;
+            top: 90px;
+            background: #ff4d6d;
+            color: white;
+        }
+
+        #yes:hover {
+            transform: scale(1.1);
+            background: #ff1f4a;
+        }
+
+        #no {
+            position: absolute;
+            left: 55%;
+            top: 90px;
+            background: #ccc;
+            transition: left 0.25s ease, top 0.25s ease;
+        }
+
+        .message {
+            margin-top: 25px;
+            font-size: 22px;
+            color: #fff;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s ease;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .message.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* ❤️ INIMIOARE CARE CAD ❤️ */
+        .heart {
+            position: fixed;
+            top: -20px;
+            font-size: 20px;
+            color: rgba(255, 0, 85, 0.8);
+            animation: fall linear forwards;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="question">Will you be my valentine? 💕</h1>
+
+    <div class="buttons" id="container">
+        <button id="yes">Yes</button>
+        <button id="no">No</button>
+    </div>
+
+    <div class="message" id="message">
+        Yaaay! 💖 I knew it 😍
+    </div>
+
+    <script>
+        const noButton = document.getElementById("no");
+        const yesButton = document.getElementById("yes");
+        const container = document.getElementById("container");
+        const message = document.getElementById("message");
+        const question = document.getElementById("question");
+
+        const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+
+        function moveNoButton() {
+            const maxX = container.clientWidth - noButton.offsetWidth;
+            const maxY = container.clientHeight - noButton.offsetHeight;
+
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+
+            noButton.style.left = randomX + "px";
+            noButton.style.top = randomY + "px";
+        }
+
+        /* ----------- DESKTOP ----------- */
+        if (!isTouchDevice) {
+            noButton.addEventListener("mouseenter", moveNoButton);
+
+            container.addEventListener("mousemove", (e) => {
+                const rect = noButton.getBoundingClientRect();
+                const distance = Math.hypot(
+                    e.clientX - (rect.left + rect.width / 2),
+                    e.clientY - (rect.top + rect.height / 2)
+                );
+
+                if (distance < 80) {
+                    moveNoButton();
+                }
+            });
+        }
+
+        /* ----------- MOBILE ----------- */
+        if (isTouchDevice) {
+            noButton.addEventListener("touchstart", (e) => {
+                e.preventDefault();
+                moveNoButton();
+            });
+
+            document.addEventListener("touchmove", (e) => {
+                const touch = e.touches[0];
+                const rect = noButton.getBoundingClientRect();
+
+                const distance = Math.hypot(
+                    touch.clientX - (rect.left + rect.width / 2),
+                    touch.clientY - (rect.top + rect.height / 2)
+                );
+
+                if (distance < 100) {
+                    moveNoButton();
+                }
+            }, { passive: false });
+        }
+
+        /* ----------- YES 💖 ----------- */
+        yesButton.addEventListener("click", () => {
+            question.style.transform = "scale(1.2)";
+            message.classList.add("show");
+            container.style.display = "none";
+        });
+
+        /* ----------- INIMIOARE ----------- */
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.className = "heart";
+            heart.innerText = "❤️";
+
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.fontSize = (14 + Math.random() * 20) + "px";
+
+            const duration = 3 + Math.random() * 3;
+            heart.style.animationDuration = duration + "s";
+
+            document.body.appendChild(heart);
+
+            setTimeout(() => heart.remove(), duration * 1000);
+        }
+
+        setInterval(createHeart, 300);
+    </script>
+
+</body>
+</html>
